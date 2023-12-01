@@ -1,0 +1,15 @@
+package main
+
+import (
+ "fmt"
+
+	__PART_1__
+	__PART_2__
+)
+
+func main() {
+	fmt.Println("Part 1:")
+	p1.Part1()
+	fmt.Println("Part 2:")
+	p2.Part2()
+}
