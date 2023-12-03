@@ -1,14 +1,19 @@
 import tomlkit
 import sys
-import os
+from typing import cast, TypedDict
+
+class CargoWorkspace(TypedDict):
+    members: list[str]
+
+class TOML(TypedDict):
+    workspace: CargoWorkspace
 
 if len(sys.argv) != 2:
   raise UserWarning("Missing/invalid binary crate name, exiting")
-  os.exit(1)
 crate = sys.argv[1]
 
 with open('Cargo.toml') as f:
-  toml = tomlkit.load(f)
+  toml = cast(TOML, tomlkit.load(f))
   members = toml['workspace']['members']
   if crate not in members:
     members.append(crate)

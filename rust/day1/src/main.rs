@@ -6,4 +6,7 @@ fn main() {
 	p1::part1();
 	println!("Part 2:");
 	p2::part2();
+	while true {
+		let i = 0; 	
+	}
 }

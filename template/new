@@ -3,30 +3,6 @@
 day="$1"
 preproc_flags="-P -C -traditional-cpp -nostdinc"
 
-template_go() {
-  # Check if the template has already been created
-  [ -x go/$1 ] && {
-    echo "go/$1 already exists, refusing to overwrite"
-    return
-  }
-  mkdir -p go/$1/p1
-  mkdir -p go/$1/p2
-
-  # Process main.pgo
-  local base="github.com/very-amused/advent-of-code-2023/go/$1"
-  cpp $preproc_flags \
-    -D__PART_1__=\"$base/p1\" -D__PART_2__=\"$base/p2\" \
-    -o go/$1/main.go template/go/main.pgo
-
-  # Process part.pgo
-  cpp $preproc_flags \
-    -D__PKG__=p1 -D__MAIN__=Part1 \
-    -o go/$1/p1/part1.go template/go/part.pgo
-  cpp $preproc_flags \
-    -D__PKG__=p2 -D__MAIN__=Part2 \
-    -o go/$1/p2/part2.go template/go/part.pgo
-}
-
 template_rust() {
   [ -x rust/$1 ] && {
     echo "rust/$1 already exists, refusing to overwrite"
@@ -41,16 +17,20 @@ template_rust() {
   # Copy main.rs, process parts
   local derive_macros='
     -D__DERIVE_DEBUG__=#[derive(Debug)]
-    -D__ALLOW_UNUSED_MACROS__=#[allow(unused_macros)]'
-  cp template/rust/main.rs rust/$1/src/
+		-D__MACRO_USE__=#[macro_use]
+		-D__MACRO_EXPORT__=#[macro_export]'
+	cpp $preproc_flags \
+		$derive_macros \
+		-o rust/$1/src/main.rs template/rust/main.rs
   cpp $preproc_flags \
-    -D__MAIN__=part1 \
     $derive_macros \
     -o rust/$1/src/p1.rs template/rust/part.rs
   cpp $preproc_flags \
-    -D__MAIN__=part2 \
     $derive_macros \
     -o rust/$1/src/p2.rs template/rust/part.rs
+	cpp $preproc_flags \
+		$derive_macros \
+		-o rust/$1/src/error.rs template/rust/error.rs
 }
 
 # Create from go template
