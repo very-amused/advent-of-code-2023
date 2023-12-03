@@ -33,9 +33,5 @@ template_rust() {
 		-o rust/$1/src/error.rs template/rust/error.rs
 }
 
-# Create from go template
-echo "Creating $1 Go template"
-template_go "$1"
-
-echo "Creating $1 Rust template"
+echo "Creating $1 from Rust template"
 template_rust "$1"

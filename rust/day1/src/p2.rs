@@ -18,11 +18,8 @@ fn parse() -> Result<Input, Box<dyn Error>> {
   // Parse lines
   let mut input: Input = Vec::new();
 
-
 	// Match vectors for each line
-  for l in reader.lines().map(|l| -> String {
-    l.unwrap_or(String::new())
-  }) {
+  for l in reader.lines().filter_map(|l| { l.ok() }) {
     if l.len() == 0 {
 			continue;
     }
