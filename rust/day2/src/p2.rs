@@ -1,4 +1,4 @@
-use std::{io::{BufReader, BufRead}, fs::File, fmt::Display, error::Error, time::Instant, str::FromStr, num::ParseIntError};
+use std::{io::{BufReader, BufRead}, fs::File, error::Error, time::Instant, time::Duration};
 use super::p1::Game;
 
 const INPUT_FILE: &str = "input.txt"; // Use sample.txt for testing
@@ -8,7 +8,7 @@ const INPUT_FILE: &str = "input.txt"; // Use sample.txt for testing
 type Input = Vec<Game>; // Set input type, defaults to Vec<i32>
 // #endregion
 
-// Parse 
+// Parse
 fn parse() -> Result<Input, Box<dyn Error>> {
   // Open scanner to read input line by line
   let file = File::open(INPUT_FILE)?;
@@ -58,16 +58,15 @@ fn solve(input: &mut Input) -> Result<String, Box<dyn Error>> {
 
 }
 
-pub fn part2() {
+pub fn run() -> (String, Duration) {
   // Parse
   let mut input = parse().expect("Failed to parse input");
 
   // Solve
   let start = Instant::now();
   let solution = solve(&mut input).expect("Failed to solve");
+  let duration = start.elapsed();
 
   // Report solve time and solution
-  let duration = start.elapsed();
-  println!("Solved in \x1b[34m{:?}\x1b[0m", duration);
-  println!("Solution: \x1b[32m{}\x1b[0m", solution);
+	(solution, duration)
 }

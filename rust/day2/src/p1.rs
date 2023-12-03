@@ -1,38 +1,7 @@
-use std::{io::{BufReader, BufRead}, fs::File, fmt::Display, error::Error, time::Instant, str::FromStr, num::ParseIntError};
+use std::{io::{BufReader, BufRead}, fs::File, error::Error, time::Instant, str::FromStr, time::Duration};
+use crate::error::*;
 
 const INPUT_FILE: &str = "input.txt"; // Use sample.txt for testing
-
-// #region Parse error
-#[derive(Debug)]
-pub enum ParseError {
-  InvalidInput(String),
-	ParseIntError(ParseIntError)
-}
-
-impl Display for ParseError {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    match self {
-      Self::InvalidInput(s) => write!(f, "{}", s),
-			Self::ParseIntError(err) => err.fmt(f)
-    }
-  }
-}
-
-impl Error for ParseError {}
-
-macro_rules! parse_err {
-  ($($arg:tt)*) => {
-    Err(ParseError::InvalidInput(format!($($arg)*)))
-  };
-}
-#[allow(unused_macros)]
-macro_rules! box_parse_err {
-  ($($arg:tt)*) => {
-    Err(Box::new(ParseError::InvalidInput(format!($($arg)*))))
-  };
-}
-
-// #endregion
 
 // #region Structs
 pub struct Round {
@@ -153,19 +122,17 @@ fn solve(input: &mut Input) -> Result<String, Box<dyn Error>> {
 	}
 
 	Ok(sum.to_string())
-
 }
 
-pub fn part1() {
+pub fn run() -> (String, Duration) {
   // Parse
   let mut input = parse().expect("Failed to parse input");
 
   // Solve
   let start = Instant::now();
   let solution = solve(&mut input).expect("Failed to solve");
-
-  // Report solve time and solution
   let duration = start.elapsed();
-  println!("Solved in \x1b[34m{:?}\x1b[0m", duration);
-  println!("Solution: \x1b[32m{}\x1b[0m", solution);
+
+  // Return solve time and solution
+	(solution, duration)
 }
