@@ -3,10 +3,10 @@ use std::{io::{BufReader, BufRead}, fs::File, error::Error, time::{Instant, Dura
 const INPUT_FILE: &str = "input.txt"; // Use sample.txt for testing
 
 // #region Structs
-struct Digits (i32, i32);
+pub struct Digits (pub i32, pub i32);
 
 impl Digits {
-	fn calibration_value(&self) -> i32 {
+	pub fn calibration_value(&self) -> i32 {
 		(10 * self.0) + self.1
 	}
 }
