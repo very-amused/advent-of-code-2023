@@ -1,2 +1,2 @@
 [workspace]
-members = ["rust/day1"]
+members = ["rust/day1", "rust/day2"]
