@@ -8,7 +8,11 @@ struct Card {
 	winning_numbers: Vec<u32>,
 	numbers: Vec<u32>
 }
-type Input = Vec<Card>;
+
+struct Input {
+	cards: Vec<Card>,
+	scores: Vec<Option<u32>> // Used for memoization
+}
 
 impl Card {
 	fn sort_winning_numbers(&mut self) {
@@ -16,7 +20,7 @@ impl Card {
 	}
 
 	// self.winning_numbers must be sorted before score can be calculated
-	pub fn score(&self, cards: &Vec<Card>, index: usize) -> u32 {
+	pub fn score(&self, cards: &Vec<Card>, scores: &mut Vec<Option<u32>>, index: usize) -> u32 {
 		// Calculate number of cards won
 		let mut cards_won_count = 0;
 		for n in &self.numbers {
@@ -29,7 +33,16 @@ impl Card {
 		let mut score: u32 = 1;
 		let cards_won_range = index+1..=index+cards_won_count;
 		for i in cards_won_range {
-			score += cards[i].score(cards, i);
+			if i >= scores.len() || scores[i] == None {
+				let s = cards[i].score(cards, scores, i);
+				if i >= scores.len() {
+					scores.resize(i+1, None);
+				}
+				scores[i] = Some(s);
+				score += s;
+			} else if let Some(s) = scores[i] {
+				score += s;
+			}
 		}
 		score
 	}
@@ -66,13 +79,16 @@ fn parse() -> Result<Input, Box<dyn Error>> {
   let reader = BufReader::new(file);
   
   // Parse lines
-  let mut input: Input = Vec::new();
+  let mut input = Input {
+		cards: vec![],
+		scores: vec![]
+	};
   for l in reader.lines().filter_map(|l| l.ok()) {
     if l.len() == 0 {
 			continue;
     }
 		if let Ok(card) = l.parse::<Card>() {
-			input.push(card);
+			input.cards.push(card);
 		}
   }
   Ok(input)
@@ -80,10 +96,9 @@ fn parse() -> Result<Input, Box<dyn Error>> {
 
 // Solve
 fn solve(input: &mut Input) -> Result<String, Box<dyn Error>> {
-	Ok(
-		input.iter().enumerate()
-		.map(|(i, card)| card.score(&input, i))
-		.sum::<u32>().to_string())
+	Ok(input.cards.iter().enumerate()
+		 .map(|(i, card)| card.score(&input.cards, &mut input.scores, i))
+		 .sum::<u32>().to_string()) // yes
 }
 
 pub fn run() -> (String, Duration) {
